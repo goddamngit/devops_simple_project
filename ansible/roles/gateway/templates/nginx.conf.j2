@@ -1,0 +1,45 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log debug;
+    
+    server {
+        listen 80;
+        server_name site.local;
+        
+        location / {
+            proxy_pass http://192.168.0.51:5000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            proxy_set_header X-Forwarded-Host $server_name;
+            
+            proxy_redirect http://192.168.0.51:5000/ /;
+        }
+    }
+    
+    server {
+        listen 80;
+        server_name monitoring.local;
+        
+        location / {
+            proxy_pass http://192.168.0.50:3000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            proxy_set_header X-Forwarded-Host $host;
+            
+            proxy_redirect http://192.168.0.50:3000/ /;
+        }
+    }
+}

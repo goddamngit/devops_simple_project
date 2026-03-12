@@ -1,0 +1,8 @@
+.vault_pass
+~/.ansible_vault_pass
+
+__pycache__/
+*.py[cod]
+.env
+
+*.retry

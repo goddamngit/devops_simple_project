@@ -1,0 +1,22 @@
+---
+- name: dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /opt/gateway
+    - /opt/gateway/nginx
+
+- name: copy
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - { src: 'docker-compose.yml.j2', dest: '/opt/gateway/docker-compose.yml' }
+    - { src: 'nginx.conf.j2', dest: '/opt/gateway/nginx/nginx.conf' }
+
+- name: Docker Compose (DB, Redis, Nginx) shell
+  shell:
+    cmd: docker compose up -d
+    chdir: /opt/gateway

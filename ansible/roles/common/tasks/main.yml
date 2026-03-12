@@ -1,0 +1,61 @@
+
+- name: update apt
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: dependencies
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - python3-pip
+    state: present
+
+- name: gpg
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: repo Docker
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+
+- name: install Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+
+- name: start Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: user docker
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
+
+- name: clear Node Exporter
+  shell: "docker rm -f node-exporter || true"
+
+- name: start Node Exporter
+  shell:
+    cmd: |
+      docker run -d \
+        --name=node-exporter \
+        --restart=always \
+        --net=host \
+        --pid=host \
+        -v "/:/host:ro,rslave" \
+        prom/node-exporter:latest \
+        --path.rootfs=/host

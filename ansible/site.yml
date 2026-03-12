@@ -1,0 +1,24 @@
+---
+- name: Common Configuration
+  hosts: all
+  become: yes
+  roles:
+    - common
+
+- name: DB + Proxy
+  hosts: gateway
+  become: yes
+  roles:
+    - gateway
+
+- name: Deploy
+  hosts: app
+  become: yes
+  roles:
+    - app
+
+- name: Deploy
+  hosts: monitoring
+  become: yes
+  roles:
+    - monitoring

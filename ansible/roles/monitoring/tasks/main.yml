@@ -1,0 +1,31 @@
+---
+- name: dir
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /opt/monitoring
+    - /opt/monitoring/prometheus
+    - /opt/monitoring/grafana
+    - /opt/monitoring/grafana/provisioning/datasources
+
+- name: copy conf Prometheus
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/monitoring/prometheus/prometheus.yml
+
+- name: Prometheus Grafana (Provisioning)
+  template:
+    src: datasource.yaml.j2
+    dest: /opt/monitoring/grafana/provisioning/datasources/datasource.yaml
+
+- name: copy Docker Compose
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/monitoring/docker-compose.yml
+
+- name: start
+  shell:
+    cmd: docker compose up -d
+    chdir: /opt/monitoring

@@ -1,0 +1,20 @@
+---
+- name: dir
+  file:
+    path: /opt/flask_app
+    state: directory
+    mode: '0755'
+
+- name: copy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/flask_app/docker-compose.yml
+
+- name: autorization
+  shell:
+    cmd: "echo {{ vault_docker_password }} | docker login -u {{ docker_hub_user }} --password-stdin"
+
+- name: start
+  shell:
+    cmd: "docker compose pull && docker compose up -d"
+    chdir: /opt/flask_app

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    image: {{ docker_hub_user }}/flask-app:latest
+    container_name: flask_web_app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=192.168.0.52
+      - DB_NAME={{ db_name }}
+      - DB_USER={{ db_user }}
+      - DB_PASS={{ vault_db_pass }}
+      - REDIS_HOST=192.168.0.52
+      - SECRET_KEY={{ vault_secret_key }}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/login"]
+      interval: 30s
+      timeout: 10s
+      retries: 5

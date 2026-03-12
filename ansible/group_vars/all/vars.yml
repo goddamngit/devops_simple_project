@@ -1,0 +1,11 @@
+docker_hub_user: "goddamngit"
+app_image: "{{ docker_hub_user }}/flask-app"
+app_version: "latest"
+
+gw_ip: "192.168.0.52"
+app_ip: "192.168.0.51"
+mon_ip: "192.168.0.50"
+
+db_name: devops_db
+db_user: devops_admin
+db_pass: SuperSecretPassword123
